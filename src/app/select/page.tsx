@@ -4,7 +4,7 @@ import { useState } from "react";
 import styles from "./index.module.scss";
 
 export default function Home() {
-    const [directoryPath, setDirectoryPath] = useState("");
+    const [directoryPath, setDirectoryPath] = useState<string>("");
     const [excludeList, setExcludeList] = useState<string[]>([]);
     const [languageExcludes, setLanguageExcludes] = useState<string[]>([]);
     const [additionalExcludes, setAdditionalExcludes] = useState<string[]>([]);
@@ -16,7 +16,7 @@ export default function Home() {
         setSelectedLanguages((prev) =>
             prev.includes(language)
                 ? prev.filter((lang) => lang !== language)
-                : [...prev, language]
+                : [...prev, " ", language]
         );
     };
 
@@ -30,31 +30,40 @@ export default function Home() {
                 additionalExcludes,
             }),
         });
-
+        if (!response.ok) {
+            console.error("İstek başarısız:", response.status);
+            return;
+        }
         const data = await response.json();
 
         if (data.success) {
-            alert("Files generated successfully.");
+            alert("Dosyalar başarıyla oluşturuldu.");
         } else {
-            alert("Error generating files.");
+            alert("Dosyalar oluşturulurken bir hata oluştu.");
         }
     };
 
     return (
         <div className={styles.container}>
-            <h1>File List Generator</h1>
+            <h1>
+                Dosya ve klasör isimlerinizi kodlarıyla beraber oluşturalım!
+            </h1>
             <div className={styles.form}>
-                <label className={styles.label}>
-                    Directory Path:
+                {/* Dizin Yolu Girişi */}
+                <label>
+                    Dizin Yolu:
                     <input
                         type="text"
                         value={directoryPath}
                         onChange={(e) => setDirectoryPath(e.target.value)}
+                        placeholder="Dizin yolunu girin (örn: C:\\Users\\enes.gedik\\Desktop\\projem)"
+                        className={styles.input}
                     />
                 </label>
 
+                {/* Dil Seçimi */}
                 <fieldset className={styles.fieldset}>
-                    <legend>Select Languages to Exclude Files/Folders:</legend>
+                    <legend>Hariç Tutmak İstediğiniz Dilleri Seçin:</legend>
                     {languages.map((lang) => (
                         <label key={lang}>
                             <input
@@ -68,8 +77,9 @@ export default function Home() {
                     ))}
                 </fieldset>
 
+                {/* Ek Hariç Tutmalar */}
                 <label>
-                    Additional Files/Folders to Exclude (comma-separated):
+                    Hariç Tutulacak Ekstra Dosya/Klasörler (virgülle ayrılmış):
                     <input
                         type="text"
                         value={additionalExcludes.join(", ")}
@@ -83,7 +93,6 @@ export default function Home() {
                         className={styles.input}
                     />
                 </label>
-
                 <button onClick={handleGenerate} className={styles.button}>
                     Generate
                 </button>
