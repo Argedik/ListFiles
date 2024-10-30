@@ -16,7 +16,7 @@ export default function Home() {
         setSelectedLanguages((prev) =>
             prev.includes(language)
                 ? prev.filter((lang) => lang !== language)
-                : [...prev, " ", language]
+                : [...prev, language]
         );
     };
 
@@ -37,7 +37,9 @@ export default function Home() {
         const data = await response.json();
 
         if (data.success) {
-            alert("Dosyalar başarıyla oluşturuldu.");
+            alert(
+                `Dosyalar başarıyla oluşturuldu. Toplam dosya sayısı: ${data.totalFiles}`
+            );
         } else {
             alert("Dosyalar oluşturulurken bir hata oluştu.");
         }
